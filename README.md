@@ -74,6 +74,29 @@ from wagtail_charts.blocks import CHART_COLOR_CHOICES, ChartBlock
 ChartBlock(colors=CHART_COLOR_CHOICES + (("#ffd700", "Gold"),))
 ```
 
+### Config callbacks
+
+To customise Chart.js options beyond the editor settings, pass named callbacks as `callbacks`, a
+sequence of `(name, label)` pairs. Editors can then pick one per chart:
+
+```python
+ChartBlock(callbacks=(("hide_gridlines", "Hide gridlines"),))
+```
+
+Register a function with the same name before `{% render_charts %}`. It must return an options
+object, which is deep-merged into the chart's Chart.js options:
+
+```html
+<script>
+  window.WAGTAILCHARTS_CALLBACKS = {
+    hide_gridlines: () => ({ scales: { x: { grid: { display: false } }, y: { grid: { display: false } } } }),
+  };
+</script>
+```
+
+Callbacks are looked up by name and never evaluated as code, so charts work under a Content
+Security Policy without `'unsafe-eval'`.
+
 ### Templates
 
 To change the chart markup, override `wagtailcharts/blocks/chart_block.html` in your project's
@@ -86,6 +109,14 @@ python -m venv .venv
 .venv/bin/pip install -e ".[test]"
 .venv/bin/pytest
 ```
+
+## Contributing
+
+Please commit with your GitHub `noreply` email address
+([how to set it up](https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-personal-account-on-github/managing-email-preferences/setting-your-commit-email-address))
+so that your personal address is not published in the git history.
+
+To report a security issue, see [SECURITY.md](SECURITY.md).
 
 ## Releasing
 

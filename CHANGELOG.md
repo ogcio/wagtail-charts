@@ -1,6 +1,18 @@
 # Changelog
 
-## 0.1.0 (unreleased)
+## 0.1.1 (unreleased)
+
+Security and maintenance (AB#45699):
+
+- Chart config callbacks are no longer run through `new Function()`. They are looked up by name
+  in `window.WAGTAILCHARTS_CALLBACKS`, so pages with charts no longer need `'unsafe-eval'` in
+  their Content Security Policy. Sites that defined callbacks as global functions must register
+  them in `window.WAGTAILCHARTS_CALLBACKS` instead.
+- jSuites upgraded from 6.3.0 to 6.6.1 and chartjs-plugin-datalabels from 2.0.0 to 2.2.0.
+- Removed a stray `>` rendered inside the chart `<canvas>` element.
+- GitHub Actions pinned to commit SHAs and kept up to date by Dependabot; added `SECURITY.md`.
+
+## 0.1.0 (2026-11-09)
 
 First release as a standalone package, extracted from the gov.ie Wagtail codebase
 (`ogcio/govie-wagtail`). Based on [wagtailcharts](https://github.com/overcastsoftware/wagtailcharts) 0.6.3.

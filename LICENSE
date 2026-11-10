@@ -27,7 +27,7 @@ This package bundles the following third-party JavaScript libraries, each
 released under the MIT License by its respective authors:
 
 - Chart.js v4.5.1 (c) Chart.js Contributors
-- chartjs-plugin-datalabels v2.0.0 (c) chartjs-plugin-datalabels contributors
+- chartjs-plugin-datalabels v2.2.0 (c) chartjs-plugin-datalabels contributors
 - chartjs-plugin-annotation v3.1.0 (c) chartjs-plugin-annotation Contributors
 - Jspreadsheet CE v5.0.4 (c) Jspreadsheet contributors
-- jSuites v6.3.0 (c) jSuites contributors
+- jSuites v6.6.1 (c) jSuites contributors
