@@ -690,9 +690,17 @@ for (i = 0; i < charts.length; ++i) {
 
     chartOptions.options = mergeDeep(options, chart_types[chartType].chart_options)
 
+    // Config callbacks are looked up by name in window.WAGTAILCHARTS_CALLBACKS, which the site
+    // must define before the `render_charts` template tag is called. The name is never evaluated
+    // as code, so pages using charts do not need 'unsafe-eval' in their Content Security Policy.
     if (configCallback !== null) {
-        const fn = new Function(`return ${configCallback}()`);
-        chartOptions.options = mergeDeep(chartOptions.options, fn())
+        const registry = window.WAGTAILCHARTS_CALLBACKS || {};
+        const fn = Object.prototype.hasOwnProperty.call(registry, configCallback) ? registry[configCallback] : null;
+        if (typeof fn === 'function') {
+            chartOptions.options = mergeDeep(chartOptions.options, fn());
+        } else {
+            console.warn(`wagtail-charts: callback "${configCallback}" is not registered in window.WAGTAILCHARTS_CALLBACKS`);
+        }
     }
 
     // main chart

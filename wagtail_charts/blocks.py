@@ -198,8 +198,9 @@ class ChartBlock(StructBlock):
 
         super().__init__(**kwargs)
 
-        # Not yet tested, keeping it in case we need custom callbacks in the future or Wagtail inject it in some cases
-        if "callbacks" in kwargs:
+        # Optional config callbacks: `callbacks` is a list of (name, label) choices. The chosen name is
+        # rendered as data-callback and resolved on the front end via window.WAGTAILCHARTS_CALLBACKS.
+        if kwargs.get("callbacks"):
             callbacks_block = ChoiceBlock(
                 choices=kwargs.get("callbacks"), label="Chart Config Callbacks", required=False
             )

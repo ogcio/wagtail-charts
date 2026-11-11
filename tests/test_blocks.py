@@ -66,3 +66,41 @@ def test_admin_icon_is_registered():
         icons = fn(icons)
 
     assert "wagtailcharts/icons/chart-line-solid-full.svg" in icons
+
+
+CALLBACKS = (("hide_gridlines", "Hide gridlines"),)
+
+
+def test_callbacks_block_is_only_added_when_configured():
+    assert "callbacks" not in ChartBlock().child_blocks
+    assert "callbacks" in ChartBlock(callbacks=CALLBACKS).child_blocks
+
+
+def test_render_outputs_selected_callback_name():
+    block = ChartBlock(callbacks=CALLBACKS)
+    value = block.to_python(
+        {"title": "Pets", "chart_type": "bar", "datasets": DATASETS, "settings": {}, "callbacks": "hide_gridlines"}
+    )
+
+    assert 'data-callback="hide_gridlines"' in block.render(value)
+
+
+def test_callbacks_block_rejects_unknown_names():
+    import pytest
+    from django.core.exceptions import ValidationError
+
+    with pytest.raises(ValidationError):
+        ChartBlock(callbacks=CALLBACKS).child_blocks["callbacks"].clean("alert(1)")
+
+
+def test_adapter_passes_callbacks_to_admin():
+    meta = ChartBlockAdapter().js_args(ChartBlock(callbacks=CALLBACKS))[2]
+
+    assert meta["callbacks"] == CALLBACKS
+
+
+def test_render_has_no_stray_markup_inside_canvas():
+    html = ChartBlock().render(make_value())
+
+    assert not re.search(r">\s*>\s*<p>", html)
+    assert "data-callback" not in html

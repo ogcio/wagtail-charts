@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ogcio-wagtail-charts"
-version = "0.1.0"
+version = "0.1.1"
 description = "Chart.js-powered chart StreamField block for Wagtail, with a spreadsheet editor for chart data."
 readme = "README.md"
 license = "MIT"
@@ -54,3 +54,4 @@ wagtail_charts = ["static/**/*", "templates/**/*"]
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "tests.settings"
 testpaths = ["tests"]
+pythonpath = ["."]
