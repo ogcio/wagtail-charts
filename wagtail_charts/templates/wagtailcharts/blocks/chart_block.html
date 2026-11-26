@@ -27,21 +27,19 @@
         </p>
     </canvas>
 {% endif %}
-{% if self.chart_type == "bar" %}
-    {% with table=self.datasets|bar_data_table %}
-        {% if table %}
-            <details>
-                <summary>{% translate "View chart data" %}</summary>
-                <table>
-                    {% if self.title %}<caption>{{ self.title }}</caption>{% endif %}
-                    <thead><tr><td></td>{% for label in table.headers %}<th scope="col">{{ label }}</th>{% endfor %}</tr></thead>
-                    <tbody>
-                        {% for series, values in table.rows %}
-                            <tr><th scope="row">{{ series }}</th>{% for value in values %}<td>{{ value|default_if_none:"" }}</td>{% endfor %}</tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </details>
-        {% endif %}
-    {% endwith %}
-{% endif %}
+{% with table=self.datasets|chart_data_table:self.chart_type %}
+    {% if table %}
+        <details>
+            <summary>{% translate "View chart data" %}</summary>
+            <table>
+                {% if self.title %}<caption>{{ self.title }}</caption>{% endif %}
+                <thead><tr><td></td>{% for label in table.headers %}<th scope="col">{{ label }}</th>{% endfor %}</tr></thead>
+                <tbody>
+                    {% for series, values in table.rows %}
+                        <tr><th scope="row">{{ series }}</th>{% for value in values %}<td>{{ value|default_if_none:"" }}</td>{% endfor %}</tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </details>
+    {% endif %}
+{% endwith %}

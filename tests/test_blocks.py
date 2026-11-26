@@ -1,6 +1,8 @@
 import json
 import re
 
+import pytest
+
 from wagtail import hooks
 
 from wagtail_charts.blocks import CHART_COLOR_CHOICES, MULTI_CHART_TYPES, ChartBlock, ChartBlockAdapter
@@ -120,3 +122,38 @@ def test_bar_chart_exposes_data_with_series_and_year_headers():
     rows = html.select("tbody tr")
     assert [row.select_one('th[scope="row"]').text for row in rows] == ["Received", "Approved"]
     assert [[td.text for td in row.select("td")] for row in rows] == [["12", "27"], ["0", "18"]]
+
+
+@pytest.mark.parametrize(
+    "chart_type",
+    ["line", "bar_horizontal", "area", "multi", "pie", "doughnut", "radar", "polar", "scatter"],
+)
+def test_other_chart_types_expose_the_same_data_table(chart_type):
+    from bs4 import BeautifulSoup
+
+    datasets = json.dumps({
+        "data": [["2024", "2025"], [12, 27], [0, 18]],
+        "options": {"title": ["Year", "Received", "Approved"]},
+    })
+    html = BeautifulSoup(ChartBlock().render(make_value(chart_type=chart_type, datasets=datasets)), "html.parser")
+    assert html.select_one("details > summary").get_text(strip=True) == "View chart data"
+    assert [th.text for th in html.select('th[scope="col"]')] == ["2024", "2025"]
+    rows = html.select("tbody tr")
+    assert [row.select_one('th[scope="row"]').text for row in rows] == ["Received", "Approved"]
+    assert [[td.text for td in row.select("td")] for row in rows] == [["12", "27"], ["0", "18"]]
+
+
+def test_waterfall_lists_each_step_change_and_running_total():
+    from bs4 import BeautifulSoup
+
+    datasets = json.dumps({
+        "data": [["Budget"], ["100"], ["130"], ["115.5"], ["115.5"]],
+        "options": {"title": ["", "Opening", "Grants", "Costs", "Closing"]},
+    })
+    html = BeautifulSoup(ChartBlock().render(make_value(chart_type="waterfall", datasets=datasets)), "html.parser")
+    assert [th.text for th in html.select('th[scope="col"]')] == ["Change", "Running total"]
+    rows = html.select("tbody tr")
+    assert [row.select_one('th[scope="row"]').text for row in rows] == ["Opening", "Grants", "Costs", "Closing"]
+    assert [[td.text for td in row.select("td")] for row in rows] == [
+        ["", "100"], ["30", "130"], ["-14.5", "115.5"], ["", "115.5"]
+    ]
